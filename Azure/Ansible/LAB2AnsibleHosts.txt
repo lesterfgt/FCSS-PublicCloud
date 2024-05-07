@@ -1,0 +1,5 @@
+[fortigates]
+LAB2_FGT_A ansible_host=172.16.2.5 ansible_user="fortiadmin" ansible_password="Fortipassword123"
+
+[fortigates:vars]
+ansible_network_os=fortinet.fortios.fortios
