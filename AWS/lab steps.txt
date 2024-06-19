@@ -1,0 +1,85 @@
+FortiWeb Ingress Controller is a solution that combines the functionalities of a Kubernetes Ingress resource with the capabilities of FortiWeb, which works as an Ingress-managed load balancer. Moreover, FortiWeb protects hosted web applications from attacks that target known and unknown exploits. Using multi-layered and correlated detection methods, FortiWeb defends applications from known vulnerabilities and zero-day threats. FortiWeb also offers a machine-learning function that enables it to automatically detect malicious web traffic. In addition to detecting known attacks, the feature can detect potential unknown zero-day attacks to provide real-time protection for web servers.
+
+--------INSTALL EKSCTL and create cluster
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/bin/
+eksctl version
+eksctl help
+eksctl create cluster --name lab4cluster --region us-east-1 --version 1.28   --nodegroup-name lab4nodes --node-type t3.medium --nodes 2 --nodes-min 1 --nodes-max 3 --managed
+
+eksctl create cluster --name lab4cluster --region us-east-1 --zones=us-east-1a,us-east-1b --version 1.28   --nodegroup-name lab4nodes --node-private-networking --node-type t3.small --nodes 2 --nodes-min 1 --nodes-max 3 --managed
+
+eksctl get cluster
+
+--------INSTALL FWEB
+-Copy the following command, and then enter it in the shell to create a new VPC named Lab4-FWeb-VPC
+
+VPC_ID=$(aws ec2 create-vpc --cidr-block 172.16.0.0/16 --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=Lab4-FWeb-VPC}]" --query 'Vpc.{VpcId:VpcId}' --output text)
+
+-Copy the following command, and then enter it in the shell to create a subnet called PublicSubnet:
+
+Subnet1=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 172.16.0.0/24 --availability-zone us-east-1a --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=PublicSubnet}]" --query Subnet.SubnetId --output text)
+
+aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 172.16.0.0/24 --availability-zone us-east-1a --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=FWebPublicSubnet}]"
+
+-Copy the following command, and then enter it in the shell to attach the internet gateway to the VPC you created:
+
+IGW_ID=$(aws ec2 create-internet-gateway --query InternetGateway.InternetGatewayId --query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text)
+
+aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID
+
+
+Launch EC2 steps....................
+
+--------Install HELM  
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+helm version
+helm repo add FortiWeb-ingress-controller https://fortinet.github.io/fortiweb-ingress/ 
+helm repo update
+helm repo list
+
+-------- INSTALL HELM CHART
+helm install  lab4 --namespace default FortiWeb-ingress-controller/fwb-k8s-ctrl
+helm history -n default lab4
+
+kubectl get -n defaults deployments
+kubectl get -n default pods
+
+kubectl create secret generic fwb-login -n default --from-literal=username=admin --from-literal=password=Fortipassword123
+
+kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiweb-ingress/main/service_examples/service1.yaml
+kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiweb-ingress/main/service_examples/service2.yaml
+
+wget https://raw.githubusercontent.com/fortinet/fortiweb-ingress/main/ingress_examples/simple-fanout-example.yaml
+
+-------Edit this sample file
+nano simple-fanout-example.yaml
+
+-------Apply FANOUT
+kubectl apply -f simple-fanout-example.yaml 
+kubectl describe ingress simple-fanout-example
+
+-------TEST WEBSITES
+curl --insecure https://test.com/info
+curl --insecure https://test.com/hello
+
+
+------ADD 3rd SERVICE
+kubectl apply -f https://raw.githubusercontent.com/fortinet/fortiweb-ingress/main/service_examples/service3.yaml
+nano simplefanout.yaml
+
+
+kubectl get service
+kubectl logs -n default lab4release1-fwb-k8s-ctrl-696b7c866-spf68   >>> check name<<<<
+kubectl describe ingress simple-fanout-example
+
+curl --insecure https://test.com/index.html
+
+kubectl get svc --all-namespaces
+kubectl delete svc service1 
+kubectl delete svc service2
+kubectl delete svc service3
+eksctl delete cluster --name lab4cluster  it takes 10 minutes
+
