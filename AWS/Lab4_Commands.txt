@@ -1,3 +1,18 @@
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/bin/
+eksctl create cluster --name lab4cluster --region us-east-1 --zones=us-east-1a,us-east-1b --version 1.28   --nodegroup-name lab4nodes --node-private-networking --node-type t3.small --nodes 2 --nodes-min 1 --nodes-max 3 --managed 
+
+VPC_ID=$(aws ec2 create-vpc --cidr-block 172.16.0.0/16 --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=FWebVPC}]" --query 'Vpc.{VpcId:VpcId}' --output text)
+Subnet1=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 172.16.0.0/24 --availability-zone us-east-1a --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=PublicSubnet}]" --query Subnet.SubnetId --output text)
+IGW_ID=$(aws ec2 create-internet-gateway --query InternetGateway.InternetGatewayId --query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text)
+aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID
+FWEB_SGID=$(aws ec2 create-security-group --group-name FWebSecGrp --description "FortiWeb Security Group" --vpc-id $VPC_ID --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=FWebSecGrp}]" --output text)
+aws ec2 authorize-security-group-ingress --group-id $FWEB_SGID --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges="[{CidrIp=0.0.0.0/0}]" IpProtocol=tcp,FromPort=80,ToPort=80,IpRanges="[{CidrIp=0.0.0.0/0}]" IpProtocol=tcp,FromPort=443,ToPort=443,IpRanges="[{CidrIp=0.0.0.0/0}]" IpProtocol=tcp,FromPort=8443,ToPort=8443,IpRanges="[{CidrIp=0.0.0.0/0}]" IpProtocol=-1,FromPort=-1,ToPort=-1,IpRanges="[{CidrIp=192.168.0.0/16}]"
+RT_ID=$(aws ec2 describe-route-tables --filters Name=vpc-id,Values=$VPC_ID --query 'RouteTables[*].Associations[*].{RouteTableId:RouteTableId}' --output text)
+aws ec2 create-route --route-table-id $RT_ID --destination-cidr-block 0.0.0.0/0 --gateway-id $IGW_ID
+
+
+
 FortiWeb Ingress Controller is a solution that combines the functionalities of a Kubernetes Ingress resource with the capabilities of FortiWeb, which works as an Ingress-managed load balancer. Moreover, FortiWeb protects hosted web applications from attacks that target known and unknown exploits. Using multi-layered and correlated detection methods, FortiWeb defends applications from known vulnerabilities and zero-day threats. FortiWeb also offers a machine-learning function that enables it to automatically detect malicious web traffic. In addition to detecting known attacks, the feature can detect potential unknown zero-day attacks to provide real-time protection for web servers.
 
 --------INSTALL EKSCTL and create cluster
