@@ -5,13 +5,10 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/d
 sudo mv /tmp/eksctl /usr/bin/
 eksctl version
 eksctl help
-eksctl create cluster --name lab4cluster --region us-east-1 --version 1.28   --nodegroup-name lab4nodes --node-type t3.medium --nodes 2 --nodes-min 1 --nodes-max 3 --managed
-
 eksctl create cluster --name lab4cluster --region us-east-1 --zones=us-east-1a,us-east-1b --version 1.28   --nodegroup-name lab4nodes --node-private-networking --node-type t3.small --nodes 2 --nodes-min 1 --nodes-max 3 --managed
-
 eksctl get cluster
 
---------INSTALL FWEB
+--------INSTALL FWEB VIRTUAL NETWOK
 -Copy the following command, and then enter it in the shell to create a new VPC named Lab4-FWeb-VPC
 
 VPC_ID=$(aws ec2 create-vpc --cidr-block 172.16.0.0/16 --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=Lab4-FWeb-VPC}]" --query 'Vpc.{VpcId:VpcId}' --output text)
