@@ -39,7 +39,7 @@ aws ec2 attach-internet-gateway --vpc-id $VPC_ID --internet-gateway-id $IGW_ID
 Step 5
 -Copy the following command, and then enter it in the shell  to create a security group associated with the VPC that you created:
 
-FWEB_SGID=$(aws ec2 create-security-group --group-name FWebSecGrp --description "FortiWeb Security Group" --vpc-id $VPC_ID --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=FWebSecGrp}]" --output text)
+FWEB_SGID=$(aws ec2 create-security-group --group-name FWebSecGrp --description "FortiWeb Security Group" --vpc-id $VPC_ID --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=FWebSecGrp}]" --query GroupId --output text)
 
 Step 6
 -Copy the following command, and then enter it in the shell  to add four traffic rules to the security group that you created:
