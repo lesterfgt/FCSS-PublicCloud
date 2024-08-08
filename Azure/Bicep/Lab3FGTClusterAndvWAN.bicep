@@ -22,7 +22,7 @@ param fortiGateImageSKU string = 'fortinet_fg-vm_payg_2023'
   '7.4.3'
   'latest'
 ])
-param fortiGateImageVersion string = 'latest'
+param fortiGateImageVersion string = '7.4.3'
 
 @description('The ARM template provides a basic configuration. Additional configuration can be added here.')
 param fortiGateAdditionalCustomData string = ''
@@ -106,16 +106,19 @@ param vnetNewOrExisting string = 'new'
 
 @description('Name of the Azure virtual network, required if utilizing an existing VNET. If no name is provided the default name will be the Resource Group Name as the Prefix and \'-VNET\' as the suffix')
 param vnetName string = ''
-
+@description('Name of the Azure virtual network, required if utilizing an existing VNET. If no name is provided the default name will be the Resource Group Name as the Prefix and \'-VNET\' as the suffix')
+param vnet2Name string = ''
 @description('Resource Group containing the existing virtual network, leave blank if a new VNET is being utilized')
 param vnetResourceGroup string = ''
 
 @description('Virtual Network Address prefix')
 param vnetAddressPrefix string = '172.16.0.0/16'
-
+@description('Virtual Network Address prefix')
+param vnet2AddressPrefix string = '10.0.0.0/16'
 @description('Subnet 1 Name')
 param subnet1Name string = 'ExternalSubnet'
-
+@description('VNET2 Subnet 1 Name')
+param VNET2Subnet1Name string = 'VNET2Subnet1'
 @description('Subnet 1 Prefix')
 param subnet1Prefix string = '172.16.1.0/26'
 
@@ -145,6 +148,9 @@ param subnet4Name string = 'ManagementSubnet'
 
 @description('Subnet 4 Prefix')
 param subnet4Prefix string = '172.16.4.0/24'
+
+@description('VNET2 Subnet 1 Prefix')
+param VNET2subnet1Prefix string = '10.0.1.0/24'
 
 @description('Subnet 4 start address, 2 consecutive private IPs are required')
 param subnet4StartAddress string = '172.16.4.4'
@@ -329,8 +335,6 @@ param fortiGateLicenseFlexVMA string = ''
 @description('Secondary FortiGate BYOL Flex-VM license token')
 param fortiGateLicenseFlexVMB string = ''
 
-@description('Location for all resources.')
-param location string = resourceGroup().location
 
 param fortinetTags object = {
   publisher: 'Fortinet'
@@ -348,15 +352,80 @@ param hubName string = ''
 @description('The hub address prefix. This address prefix will be used as the address prefix for the hub vnet')
 param hubAddressPrefix string = '172.17.100.0/24'
 
+//Linux VM parameters section
+@description('The name of your Virtual Machine.')
+param LinuxVmNameVNET2 string = 'LAB3-LinuxVM-VNET2'
+
+@description('The name of your Virtual Machine.')
+param LinuxVmNameVNET1 string = 'LAB3-LinuxVM-VNET1'
+
+@description('Username for the Virtual Machine.')
+param LinuxUsername string
+
+param authenticationType string = 'password'
+
+@description('SSH Key or password for the Virtual Machine. SSH key is recommended.')
+@secure()
+param LinuxPassword string
+
+@description('Unique DNS Name for the Public IP used to access the Virtual Machine.')
+param dnsLabelPrefix string = toLower('${LinuxVmNameVNET2}-${uniqueString(resourceGroup().id)}')
+
+
+
+param ubuntuOSVersion string = 'Ubuntu-2204'
+
+@description('Location for all resources.')
+param location string = resourceGroup().location
+
+@description('The size of the VM')
+param LinuxVmSize string = 'Standard_B1ms'
+
+@description('Name of the Network Security Group')
+param networkSecurityGroupName string = 'LAB3-LinuxVM-SecGroupNet'
+
+//vWAN and HUB Variables section
+
 var vWanNamevar = ((vWanName == '') ? '${ResourcesPrefix}-VWAN-${location}' : vWanName)
 var hubNamevar = ((hubName == '') ? '${ResourcesPrefix}-HUB-${location}' : hubName)
-var vnetNamevar = ((vnetName == '') ? '${ResourcesPrefix}-VNET' : vnetName)
+var vnetNamevar = ((vnetName == '') ? '${ResourcesPrefix}-VNET1' : vnetName)
+var vnet2Namevar = ((vnet2Name == '') ? '${ResourcesPrefix}-VNET2' : vnet2Name)
 var sn2IPArray2nd = split(sn2IPArray2ndString, '/')
 var sn2IPArray2 = string(int(sn2IPArray[2]))
 var sn2IPArray1 = string(int(sn2IPArray[1]))
 var sn2IPArray0 = string(int(sn2IPArray[0]))
 var sn2IPlb = '${sn2IPArray0}.${sn2IPArray1}.${sn2IPArray2}.${(int(sn2IPArray2nd[0])+4)}'
 
+//Linux VMs variables section 
+var imageReference = {
+  
+  'Ubuntu-2204': {
+    publisher: 'Canonical'
+    offer: '0001-com-ubuntu-server-jammy'
+    sku: '22_04-lts-gen2'
+    version: 'latest'
+  }
+}
+var publicIPAddressName = '${LinuxVmNameVNET2}PublicIP'
+var networkInterfaceName = '${LinuxVmNameVNET2}NetInt'
+
+//var publicIPAddressNameLinux1 = '${LinuxVmNameVNET1}PublicIP'
+var networkInterfaceNameLinux1 = '${LinuxVmNameVNET1}NetInt'
+
+var osDiskType = 'Standard_LRS'
+var linuxConfiguration = {
+  disablePasswordAuthentication: false
+  ssh: {
+    publicKeys: [
+      {
+        path: '/home/${LinuxUsername}/.ssh/authorized_keys'
+        keyData: LinuxPassword
+      }
+    ]
+  }
+}
+
+//vWAN and HUB resources section
 resource vWan 'Microsoft.Network/virtualWans@2023-04-01' = {
   name: vWanNamevar
   location: location
@@ -374,6 +443,7 @@ resource hub 'Microsoft.Network/virtualHubs@2023-04-01' = {
   }
 }
 
+//FGT variables section
 var imagePublisher = 'fortinet'
 var imageOffer = 'fortinet_fortigate-vm_v5'
 var availabilitySetNamevar = '${ResourcesPrefix}-AvailabilitySet'
@@ -384,6 +454,9 @@ var subnet1Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/vi
 var subnet2Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet2Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet2Name))
 var subnet3Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet3Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet3Name))
 var subnet4Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet4Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet4Name))
+var subnet5Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet5Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnetNamevar, subnet5Name))
+
+var VNET2subnet1Id = ((vnetNewOrExisting == 'new') ? resourceId('Microsoft.Network/virtualNetworks/subnets', vnet2Namevar, VNET2Subnet1Name) : resourceId(vnetResourceGroup, 'Microsoft.Network/virtualNetworks/subnets', vnet2Namevar, VNET2Subnet1Name))
 var fgaVmNamevar = '${ResourcesPrefix}-FGT-A'
 var fgbVmNamevar = '${ResourcesPrefix}-FGT-B'
 var fmgCustomData = ((fortiManager == 'yes') ? '\nconfig system central-management\nset type fortimanager\n set fmg ${fortiManagerIP}\nset serial-number ${fortiManagerSerial}\nend\n config system interface\n edit port1\n append allowaccess fgfm\n end\n config system interface\n edit port2\n append allowaccess fgfm\n end\n' : '')
@@ -506,6 +579,7 @@ resource serialConsoleStorageAccountName 'Microsoft.Storage/storageAccounts@2023
   }
 }
 
+//Azure network resources section
 resource availabilitySetName 'Microsoft.Compute/availabilitySets@2023-09-01' = if (!useAZ) {
   name: availabilitySetNamevar
   location: location
@@ -541,6 +615,23 @@ resource routeTableName 'Microsoft.Network/routeTables@2023-04-01' = {
   }
 }
 
+/*resource VNET2Subnet1routeTable 'Microsoft.Network/routeTables@2023-04-01' = {
+  name: 'LAB3-VNET2Subnet1-RT'
+  location: location
+  properties: {
+    routes: [
+      {
+        name: 'toDefault'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VnetLocal'
+          
+        }
+      }
+    ]
+  }
+}
+*/
 resource vnetName_resource 'Microsoft.Network/virtualNetworks@2023-04-01' = if (vnetNewOrExisting == 'new') {
   name: vnetNamevar
   location: location
@@ -817,6 +908,31 @@ resource externalLBName 'Microsoft.Network/loadBalancers@2023-04-01' = {
   }
 }
 
+//Linux VNET 2 resource section
+resource LAB3VNET2 'Microsoft.Network/virtualNetworks@2023-04-01' = if (vnetNewOrExisting == 'new') {
+  name: vnet2Namevar
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+            vnet2AddressPrefix
+          ]
+    }
+    subnets: [
+      {
+        name: VNET2Subnet1Name
+        properties: {
+          addressPrefix: VNET2subnet1Prefix
+          /*routeTable: {
+            id: VNET2Subnet1routeTable.id
+          }*/
+        }
+      }
+    ]
+  }
+}
+
+//FGT VMs resources section
 resource fgaNic1Name 'Microsoft.Network/networkInterfaces@2023-04-01' = {
   tags: {
     provider: toUpper(fortinetTags.provider)
@@ -1245,7 +1361,184 @@ resource fgbVmName 'Microsoft.Compute/virtualMachines@2023-09-01' = {
   }
 }
 
+//Linux VM VNET1 resources section
+resource LinuxVNET1NetworkInterface 'Microsoft.Network/networkInterfaces@2023-09-01' = {
+  name: networkInterfaceNameLinux1
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          subnet: { 
+           id: subnet5Id
+                     } 
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+    networkSecurityGroup: {
+      id: networkSecurityGroup.id
+    }
+  }
+  dependsOn: [
+    vnetName_resource
+  ]
+}
+
+//Linux VM VNET2 resources section
+resource LinuxNetworkInterface 'Microsoft.Network/networkInterfaces@2023-09-01' = {
+  name: networkInterfaceName
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          subnet: { 
+           id: VNET2subnet1Id
+                     } 
+          privateIPAllocationMethod: 'Dynamic'
+          publicIPAddress: {
+            id: LinuxVMpublicIPAddress.id
+          }
+        }
+      }
+    ]
+    networkSecurityGroup: {
+      id: networkSecurityGroup.id
+    }
+  }
+  dependsOn: [
+    LAB3VNET2
+  ]
+}
+
+
+
+
+resource networkSecurityGroup 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
+  name: networkSecurityGroupName
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'SSH'
+        properties: {
+          priority: 1000
+          protocol: 'Tcp'
+          access: 'Allow'
+          direction: 'Inbound'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '22'
+        }
+      }
+    ]
+  }
+}
+
+resource LinuxVMpublicIPAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = {
+  name: publicIPAddressName
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Dynamic'
+    publicIPAddressVersion: 'IPv4'
+    dnsSettings: {
+      domainNameLabel: dnsLabelPrefix
+    }
+    idleTimeoutInMinutes: 4
+  }
+}
+
+
+resource vm1 'Microsoft.Compute/virtualMachines@2023-09-01' = {
+  name: LinuxVmNameVNET1
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: LinuxVmSize
+    }
+    storageProfile: {
+      osDisk: {
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: osDiskType
+        }
+      }
+      imageReference: imageReference[ubuntuOSVersion]
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: LinuxVNET1NetworkInterface.id
+        }
+      ]
+    }
+    osProfile: {
+      computerName: LinuxVmNameVNET1
+      adminUsername: LinuxUsername
+      adminPassword: LinuxPassword
+      linuxConfiguration: ((authenticationType == 'password') ? null : linuxConfiguration)
+    }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: serialConsoleEnabled
+        storageUri: ((serialConsole == 'yes') ? reference(serialConsoleStorageAccountNamevar, '2021-08-01').primaryEndpoints.blob : null)
+      }
+    }
+  }
+}
+
+resource vm2 'Microsoft.Compute/virtualMachines@2023-09-01' = {
+  name: LinuxVmNameVNET2
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: LinuxVmSize
+    }
+    storageProfile: {
+      osDisk: {
+        createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: osDiskType
+        }
+      }
+      imageReference: imageReference[ubuntuOSVersion]
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: LinuxNetworkInterface.id
+        }
+      ]
+    }
+    osProfile: {
+      computerName: LinuxVmNameVNET2
+      adminUsername: LinuxUsername
+      adminPassword: LinuxPassword
+      linuxConfiguration: ((authenticationType == 'password') ? null : linuxConfiguration)
+    }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: serialConsoleEnabled
+        storageUri: ((serialConsole == 'yes') ? reference(serialConsoleStorageAccountNamevar, '2021-08-01').primaryEndpoints.blob : null)
+      }
+    }
+  }
+}
+
+
+//FGT VM output section
 output fortiGatePublicIP string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).ipAddress : '')
 output fortiGateFQDN string = ((publicIP1NewOrExisting == 'new') ? reference(publicIP1Id).dnsSettings.fqdn : '')
 output fortiGateAManagementPublicIP string = ((publicIP2NewOrExisting == 'new') ? reference(publicIP2Id).ipAddress : '')
 output fortiGateBManagementPublicIP string = ((publicIP3NewOrExisting == 'new') ? reference(publicIP3Id).ipAddress : '')
+//Linux VM output section
+output adminUsername string = LinuxUsername
+output hostname string = LinuxVMpublicIPAddress.properties.dnsSettings.fqdn
+output sshCommand string = 'ssh ${LinuxUsername}@${LinuxVMpublicIPAddress.properties.dnsSettings.fqdn}'
