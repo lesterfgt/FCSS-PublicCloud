@@ -22,7 +22,7 @@ param fortiGateImageSKU string = 'fortinet_fg-vm_payg_2023'
   '7.4.3'
   'latest'
 ])
-param fortiGateImageVersion string = '7.4.3'
+param fortiGateImageVersion string = 'latest'
 
 @description('The ARM template provides a basic configuration. Additional configuration can be added here.')
 param fortiGateAdditionalCustomData string = ''
