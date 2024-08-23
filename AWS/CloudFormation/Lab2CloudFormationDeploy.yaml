@@ -226,23 +226,23 @@ Mappings:
     il-central-1:
       fgtami: ami-08af016469c9be301
     ca-central-1:
-      fgtami: ami-0e04ba5054ca4da5b
+      fgtami: ami-0ca07cbf810e30f13
     eu-central-1:
-      fgtami: ami-01bd410bcaa617f44
+      fgtami: ami-0125a81a4377817fd
     eu-central-2:
       fgtami: ami-0f48420bee09cf6a7
     us-west-1:
-      fgtami: ami-0153df6ede9484eb2
+      fgtami: ami-0069be80f06b506c9
     us-west-2:
-      fgtami: ami-0a62643a3c57dacb3
+      fgtami: ami-07ec0b6fea82ae098
     af-south-1:
       fgtami: ami-07cfbecd499c1e704
     eu-north-1:
-      fgtami: ami-026697e3f2e27cc14
+      fgtami: ami-082dd35bf061b7adb
     eu-west-3:
-      fgtami: ami-04fb7eaa45bcdf668
+      fgtami: ami-0e3c04ca95c5b3cc9
     eu-west-2:
-      fgtami: ami-03471a82df55ecce4
+      fgtami: ami-03e2195a11219eb43
     eu-west-1:
       fgtami: ami-0dd7de3ea96419dbd
     ap-northeast-3:
@@ -268,9 +268,9 @@ Mappings:
     ap-southeast-4:
       fgtami: ami-02c59ea0f1fdd9d3e
     us-east-1:
-      fgtami: ami-069777173bc107452
+      fgtami: ami-0d33aefd9570ef336
     us-east-2:
-      fgtami: ami-0599d618948826eb2
+      fgtami: ami-0b053e06e5318abce
   AWSInstanceType2Arch:
     t3.micro:
       Arch: HVM64
