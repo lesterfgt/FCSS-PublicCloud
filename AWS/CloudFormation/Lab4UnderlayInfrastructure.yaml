@@ -1,0 +1,139 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "(v2.0) AWS CFT to deploy a VPC with 1 subnet."
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: VPC Configuration
+      Parameters:
+      - VPCCIDR
+      - Subnet
+     
+Parameters:
+  VPCCIDR:
+    Type: String
+    Default: 172.16.0.0/16
+    Description: Provide a network CIDR for the VPC
+  
+  Subnet:
+    Type: String
+    Default: 172.16.0.0/24
+    Description: Provide a network CIDR for Subnet
+  
+Conditions: {}
+
+Resources:
+  FwebVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock:
+        Ref: VPCCIDR
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Join:
+          - "-"
+          - - Ref: AWS::StackName
+            - FwebVPC    
+  FwebSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: FwebVPC
+    
+      CidrBlock:
+        Ref: Subnet
+      AvailabilityZone: us-east-1a
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Join:
+          - "-"
+          - - Ref: AWS::StackName
+            - FwebSubnet
+  
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Join:
+          - "-"
+          - - Ref: AWS::StackName
+            - IGW
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: FwebVPC
+    
+      InternetGatewayId:
+        Ref: InternetGateway
+  FwebVPCPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: FwebVPC
+    
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Join:
+          - "-"
+          - - Ref: AWS::StackName
+            - FwebVPCPublicRouteTable
+  FwebSubnetDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId:
+        Ref: FwebVPCPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: InternetGateway
+  SubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId:
+        Ref: FwebSubnet
+      RouteTableId:
+        Ref: FwebVPCPublicRouteTable
+  FwebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId:
+        Ref: FwebVPC
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Join:
+          - "-"
+          - - Ref: AWS::StackName
+            - FwebSecurityGroup
+      GroupDescription: Enables all required traffic
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8443
+        ToPort: 8443
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+        CidrIp: 192.168.0.0/16
+
