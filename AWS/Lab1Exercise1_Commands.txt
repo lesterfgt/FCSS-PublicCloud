@@ -1,21 +1,27 @@
+To create a VPC
+
+Step 4
 Copy the following command, and then enter it in the shell to create a new VPC named Lab1-VPC:
 
 VPC_ID=$(aws ec2 create-vpc --cidr-block 10.0.0.0/16 \ 
 --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=Lab1_VPC}]" \
 --query 'Vpc.{VpcId:VpcId}' --output text)
 
+Step 5
 Copy the following command, and then enter it in the shell to create a subnet called PublicSubnet:
 
 Subnet1=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.0.0/24 \
 --availability-zone us-east-1a --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=PublicSubnet}]" \
 --query Subnet.SubnetId --output text)
 
+Step 6
 Copy the following command, and then enter it in the shell to create a subnet called PrivateSubnet:
 
 Subnet2=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block 10.0.1.0/24 \
 --availability-zone us-east-1a --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=PrivateSubnet}]" \
 --query Subnet.SubnetId --output text)
 
+Step 7
 Copy the following command, and then enter it in the shell  to create an internet gateway:
 
 IGW_ID=$(aws ec2 create-internet-gateway \
@@ -23,6 +29,7 @@ IGW_ID=$(aws ec2 create-internet-gateway \
 --query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' \
 --output text)
 
+Step 8
 Copy the following command, and then enter it in the shell  to attach the internet gateway to the VPC you created:
 
 aws ec2 attach-internet-gateway --vpc-id $VPC_ID \
