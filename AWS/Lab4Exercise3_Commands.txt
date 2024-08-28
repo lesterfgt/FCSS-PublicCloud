@@ -1,5 +1,5 @@
 ********************************************************************************************
-*****Exercise 3 ==> To install the FortiWeb ingress controller ****
+*****Lab 4 Exercise 3 ==> To install the FortiWeb ingress controller ****
 ********************************************************************************************
 Step 1
 -Copy the following command, and then enter it  in the shell to download the Helm installation script:
@@ -72,7 +72,7 @@ Step 17
 kubectl apply -f simple-fanout-example.yaml
 
 ********************************************************************************************
-*****Exercise 3 ==> To verify that the FortiWeb configuration is updated ****
+*****Lab 4 Exercise 3 ==> To verify that the FortiWeb configuration is updated ****
 ********************************************************************************************
 
 Step 5
@@ -93,7 +93,7 @@ curl --insecure https://training.fortinet.lab/hello
 nano simple-fanout-example.yaml
 
 ********************************************************************************************
-*****Exercise 3 ==> To create a third service in preparation for the next exercise ****
+*****Lab 4 Exercise 3 ==> To create a third service in preparation for the next exercise ****
 ********************************************************************************************
 Step 1
 -Copy the following command, and then enter it in the shell to deploy a new pod and expose a new service:
