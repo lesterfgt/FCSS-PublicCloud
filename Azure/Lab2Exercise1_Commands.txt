@@ -1,0 +1,65 @@
+********************************************************************************************
+*****Lab 2 Exercise 1 ==> To deploy the Bicep template ****
+********************************************************************************************
+Step 6
+-Copy the following command, and enter it in the shell to  create a new resource group named LAB2Azure:
+
+az group create --name LAB2Azure --location centralus
+
+Step 7
+-Copy the following command, and enter it in the shell to  use the what-if tool before you deploy anything:
+
+az deployment group what-if --resource-group LAB2Azure \
+--template-file LAB2AzureDeployment.bicep
+
+Step 10
+-Copy the following command, and enter it in the shell to deploy the resources in the template:
+
+az deployment group create --resource-group LAB2Azure \
+--template-file LAB2AzureDeployment.bicep --name LAB2
+
+********************************************************************************************
+*****Lab 2 Exercise 1 ==>To deploy a Linux VM ****
+********************************************************************************************
+Step 11
+-Enter the following commands, one at a time, to install Ansible on the Linux VM:
+
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+ 
+sudo apt install ansible
+ 
+ansible --version
+
+********************************************************************************************
+*****Lab 2 Exercise 1 ==>To download and examine the playbook and inventory files from GitHub****
+********************************************************************************************
+Step 1
+-Copy the following command, and enter it in the terminal session to download the Ansible playbook:
+
+wget https://raw.githubusercontent.com/Fortinet-Courseware/\
+FCSS-PublicCloud/main/Azure/Ansible/LAB2AnsibleFWpolicy.yaml
+
+Step 2
+-Copy the following command, and enter it in the terminal session to download the Ansible hosts file:
+
+wget https://raw.githubusercontent.com/Fortinet-Courseware/\
+FCSS-PublicCloud/main/Azure/Ansible/LAB2AnsibleHosts.txt
+
+Step 3
+-Enter the following command to examine the inventory file:
+
+cat LAB2AnsibleHosts.txt
+This file is the inventory, and it includes the IP address of the FortiGate that you want to manage, as well as the credentials to access it.
+
+Step 4
+-Enter the following command to examine the playbook file:
+
+cat LAB2AnsibleFWpolicy.yaml
+
+********************************************************************************************
+*****Lab 2 Exercise 1 ==>To run the Ansible playbook****
+********************************************************************************************
+Step 1
+-Enter the following command to run the playbook:
+
+ansible-playbook -i LAB2AnsibleHosts.txt LAB2AnsibleFWpolicy.yaml -v
