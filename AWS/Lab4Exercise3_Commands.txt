@@ -1,5 +1,5 @@
 ********************************************************************************************
-*****Lab 4 Exercise 3 ==> To install the FortiWeb ingress controller ****
+*****Lab 4 Exercise 3 ==> To install the FortiWeb ingress controller****
 ********************************************************************************************
 Step 1
 -Copy the following command, and then enter it  in the shell to download the Helm installation script:
