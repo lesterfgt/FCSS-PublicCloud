@@ -1,7 +1,8 @@
 To install Terraform in AWS CloudShell
 
 Step 3
-Copy the following command, and then enter it in the shell to find the latest version of Terraform and store it in a variable named TERRAFORM_VER:
+Copy the following command, and then enter it in the shell to find the latest version of Terraform and store it in a variable 
+named TERRAFORM_VER:
 
 TERRAFORM_VER=`curl -s \
 https://api.github.com/repos/hashicorp/terraform/releases/latest \
@@ -9,15 +10,18 @@ https://api.github.com/repos/hashicorp/terraform/releases/latest \
 
 Step 4
 Copy the following command, and then enter it in the shell to download the latest version of Terraform in a zip file:
+
 wget https://releases.hashicorp.com/terraform/${TERRAFORM_VER}/\
 terraform_${TERRAFORM_VER}_linux_amd64.zip
 
 Step 5
 Copy the following command, and then enter it in the shell to extract the content of the zip file:
+
 unzip terraform_${TERRAFORM_VER}_linux_amd64.zip
 
 Step 6
 Copy the following command, and then enter it in the shell to make a directory called bin, and then move the Terraform executable file to that directory:
+
 mkdir ~/bin && mv terraform ~/bin
 
 Step 8
