@@ -1,0 +1,20 @@
+********************************************************************************************
+*****Exercise 3 ==> To verify that the FortiWeb configuration is updated ****
+********************************************************************************************
+
+Step 5
+- Copy the following command, and then enter it in the shell to edit its hosts file:
+
+sudo nano /etc/hosts
+
+Step 9
+- Copy the following command, and then enter it in the shell to test connectivity to the service1 page:
+
+curl --insecure https://training.fortinet.lab/info
+
+Step 11
+- Copy the following command, and then enter it in the shell to test connectivity to the service2 page:
+
+curl --insecure https://training.fortinet.lab/hello
+
+nano simple-fanout-example.yaml
