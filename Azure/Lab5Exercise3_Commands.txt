@@ -1,5 +1,5 @@
 ********************************************************************************************
-*****Lab 5 Exercise 3 ==> To troubleshoot access to the active FortiGate using HTTPS***
+*****Lab 5 Exercise 3 ==> To troubleshoot access to the active FortiGate using HTTPS****
 ********************************************************************************************
 Step 6
 -Enter the following command to display HTTPS traffic (adjust to use your own public IP address): 
