@@ -1,0 +1,33 @@
+********************************************************************************************
+*****Lab 5 Exercise 2 ==> To obtain the Terraform template from GitHub***
+********************************************************************************************
+Step 2
+-Copy the following command, and then enter it in the shell to download the Terraform files:
+
+wget https://github.com/Fortinet-Courseware/\
+FCSS-PublicCloud/raw/main/Azure/Troubleshooting.zip
+
+Step 3
+-Copy the following command, and then enter it in the shell to unzip the downloaded file:
+
+unzip Troubleshooting.zip
+
+Step 4
+-Copy the following command, and then enter it in the shell to navigate to the Troubleshooting directory: 
+
+cd Troubleshooting
+
+Step 5
+-Copy the following command, and then enter it in the shell to rename  the terraform.tfvars.example file to terraform.tfvars:
+
+mv terraform.tfvars.example  terraform.tfvars
+
+Step 6
+-Enter the following command to initialize Terraform:
+
+terraform init
+
+Step 7
+-Enter the following command to preview the configuration changes Terraform would make if you apply them:
+
+terraform plan
