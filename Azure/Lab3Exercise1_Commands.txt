@@ -1,5 +1,5 @@
 ********************************************************************************************
-*****Lab 3 Exercise 1 ==> To deploy the Bicep template ****
+*****Lab 3 Exercise 1 ==> To deploy the Bicep template****
 ********************************************************************************************
 Step 6
 -Copy the following command, and enter it in the shell to create a new resource group named LAB3Azure:
