@@ -1,5 +1,5 @@
 ********************************************************************************************
-*****Exercise 2 ==> To create a resource group, a VNET, and three subnets ****
+*****Lab 1 Exercise 2 ==> To create a resource group, a VNET, and three subnets ****
 ********************************************************************************************
 
 Step 3
@@ -27,7 +27,7 @@ az network vnet subnet create -g RG-LAB1 --vnet-name VNET-LAB1 \
 -n Protected --address-prefixes 172.16.2.0/24
 
 ********************************************************************************************
-*****Exercise 2 ==> To create a FortiGate VM ****
+*****Lab 1 Exercise 2 ==> To create a FortiGate VM ****
 ********************************************************************************************
 
 Step 1
@@ -37,7 +37,7 @@ az vm image terms accept --publisher fortinet \
 --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm_payg_2023
 
 ********************************************************************************************
-*****Exercise 2 ==> To create an Ubuntu VM ****
+*****Lab 1 Exercise 2 ==> To create an Ubuntu VM ****
 ********************************************************************************************
 
 Step 1 
