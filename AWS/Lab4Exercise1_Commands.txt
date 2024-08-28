@@ -1,5 +1,5 @@
 ********************************************************************************************
-********Exercise 1 ==> Commands to create an EKS cluster********
+********Lab 4 Exercise 1 ==> Commands to create an EKS cluster********
 ********************************************************************************************
 Step 3
 -Copy the following commands, and then enter them in the shell one at a time to download eksctl:
@@ -14,7 +14,7 @@ Step 4
 eksctl create cluster --name lab4cluster --region us-east-1 --zones=us-east-1a,us-east-1b --version 1.28   --nodegroup-name lab4nodes --node-private-networking --node-type t3.small --nodes 2 --nodes-min 1 --nodes-max 3 --managed
 
 ********************************************************************************************
-******Exercise 1 ==> Commands to create a VPC, a subnet, an internet gateway, and all required routes******
+******Lab 4 Exercise 1 ==> Commands to create a VPC, a subnet, an internet gateway, and all required routes******
 ********************************************************************************************
 Step 1
 -Copy the following command, and then enter it in the shell to create a new VPC named FWebVPC:
