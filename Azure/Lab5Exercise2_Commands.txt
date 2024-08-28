@@ -1,5 +1,5 @@
 ********************************************************************************************
-*****Lab 5 Exercise 2 ==> To obtain the Terraform template from GitHub***
+*****Lab 5 Exercise 2 ==> To obtain the Terraform template from GitHub****
 ********************************************************************************************
 Step 2
 -Copy the following command, and then enter it in the shell to download the Terraform files:
