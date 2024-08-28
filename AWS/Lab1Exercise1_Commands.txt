@@ -1,4 +1,6 @@
-To create a VPC
+********************************************************************************************
+*****Exercise 1 ==> To create a VPC ****
+********************************************************************************************
 
 Step 4
 -Copy the following command, and then enter it in the shell to create a new VPC named Lab1-VPC:
