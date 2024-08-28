@@ -1,5 +1,5 @@
 ********************************************************************************************
-********Lab 4 Exercise 1 ==> Commands to create an EKS cluster********
+********Lab 4 Exercise 1 ==> Commands to create an EKS cluster*******
 ********************************************************************************************
 Step 3
 -Copy the following commands, and then enter them in the shell one at a time to download eksctl:
