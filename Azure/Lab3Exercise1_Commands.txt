@@ -1,0 +1,81 @@
+To deploy the Bicep template
+
+Step 6
+-Copy the following command, and enter it in the shell to create a new resource group named LAB3Azure:
+
+az group create --name LAB3Azure --location centralus
+
+Step 7
+-Copy the following command, and enter it in the shell to deploy the resources in the template:
+
+az deployment group create --resource-group LAB3Azure \
+--template-file Lab3FGTClusterAndvWAN.bicep --name LAB3
+
+To peer the VNets with the virtual hub
+
+Step 3
+-Copy the following command, and enter it in the shell to connect VNET1 to the hub:
+
+az network vhub connection create --name VNET1-HUB-Connection \
+--remote-vnet LAB3-VNET1 --resource-group LAB3Azure \
+--vhub-name LAB3-HUB-centralus --internet-security false
+
+Step 5
+-Copy the following command, and enter it in the shell to connect VNET2 to the hub:
+
+az network vhub connection create --name VNET2-HUB-Connection \
+--remote-vnet LAB3-VNET2 --resource-group LAB3Azure \
+--vhub-name LAB3-HUB-centralus --internet-security false
+
+To configure static routes on the FortiGate VMs
+
+Step 1
+-Copy the following commands, and then enter them in the FortiGate CLI console to create a static route on the FortiGate VM toward the virtual hub:
+config router static
+edit 10
+set dst 172.17.100.0/24
+set gateway 172.16.2.1
+set device port2
+end
+
+To configure BGP on the FortiGate VMs
+
+Step 1
+-Copy the following commands, and then enter them in the FortiGate CLI console to configure BGP on the FortiGate side.
+config router bgp
+set as 65007
+set ebgp-multipath enable
+set graceful-restart enable
+config neighbor
+edit "172.17.100.68"
+set capability-default-originate enable
+set ebgp-enforce-multihop enable
+set soft-reconfiguration enable
+set interface "port2"
+set remote-as 65515
+next
+edit "172.17.100.69"
+set capability-default-originate enable
+set ebgp-enforce-multihop enable
+set soft-reconfiguration enable
+set interface "port2"
+set remote-as 65515
+next
+end
+end
+
+To verify the  routing configuration
+Step 4
+-Copy the following command, and enter it in the Azure Cloud shell to create a new VNet named LAB3-VNET3 with a subnet named Test:
+
+az network vnet create --name LAB3-VNET3 --location centralus \
+--resource-group LAB3Azure --address-prefix 10.1.0.0/16 \
+--subnet-name Test --subnet-prefixes 10.1.0.0/24
+
+Step 5
+-Copy the following command, and enter it in the Azure Cloud shell to connect LAB3-VNET3 to the hub:
+
+az network vhub connection create --name VNET3-HUB-Connection \
+--remote-vnet LAB3-VNET3 --resource-group LAB3Azure \
+--vhub-name LAB3-HUB-centralus --internet-security false
+
