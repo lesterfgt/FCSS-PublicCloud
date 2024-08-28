@@ -1,40 +1,46 @@
+********************************************************************************************
+*****Exercise 2 ==> To create a resource group, a VNET, and three subnets ****
+********************************************************************************************
 
-To create a resource group, a VNET, and three subnets
-
-Step3
+Step 3
 -Copy the following command, and then enter it in the shell to create a new resource group named RG-LAB1:
 
 az group create --name RG-LAB1 --location eastus2
 
-Step4
+Step 4
 -Copy the following command, and then enter it in the shell to create a new VNET named VNET-LAB1 with a subnet named External:
 
 az network vnet create --name VNET-LAB1 --location eastus2 \
 --resource-group RG-LAB1 --address-prefix 172.16.0.0/16 \
 --subnet-name External --subnet-prefixes 172.16.0.0/24
 
-Step5
+Step 5
 -Copy the following command, and then enter it in the shell to create an additional subnet called Internal:
 
 az network vnet subnet create -g RG-LAB1 --vnet-name VNET-LAB1 \
 -n Internal --address-prefixes 172.16.1.0/24
 
-Step6
+Step 6
 -Copy the following command, and then enter it in the shell to create an additional subnet called Protected:
 
 az network vnet subnet create -g RG-LAB1 --vnet-name VNET-LAB1 \
 -n Protected --address-prefixes 172.16.2.0/24
 
-To create a FortiGate VM
-Step1
+********************************************************************************************
+*****Exercise 2 ==> To create a FortiGate VM ****
+********************************************************************************************
+
+Step 1
 -Copy the following command, and then enter it in the shell to accept the terms for the FortiGate PAYG image in Azure Marketplace:
 
 az vm image terms accept --publisher fortinet \
 --offer fortinet_fortigate-vm_v5 --plan fortinet_fg-vm_payg_2023
 
+********************************************************************************************
+*****Exercise 2 ==> To create an Ubuntu VM ****
+********************************************************************************************
 
-To create an Ubuntu VM
-Step1 
+Step 1 
 -Return to Azure Cloud Shell, and then copy the following command, and enter it in the shell to create a new Ubuntu VM:
 
 az vm create --resource-group RG-LAB1 --vnet-name VNET-LAB1 \
