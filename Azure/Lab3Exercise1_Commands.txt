@@ -1,5 +1,6 @@
-To deploy the Bicep template
-
+********************************************************************************************
+*****Lab 3 Exercise 1 ==> To deploy the Bicep template ****
+********************************************************************************************
 Step 6
 -Copy the following command, and enter it in the shell to create a new resource group named LAB3Azure:
 
@@ -11,8 +12,9 @@ Step 7
 az deployment group create --resource-group LAB3Azure \
 --template-file Lab3FGTClusterAndvWAN.bicep --name LAB3
 
-To peer the VNets with the virtual hub
-
+********************************************************************************************
+*****Lab 3 Exercise 1 ==> To peer the VNets with the virtual hub****
+********************************************************************************************
 Step 3
 -Copy the following command, and enter it in the shell to connect VNET1 to the hub:
 
@@ -27,8 +29,9 @@ az network vhub connection create --name VNET2-HUB-Connection \
 --remote-vnet LAB3-VNET2 --resource-group LAB3Azure \
 --vhub-name LAB3-HUB-centralus --internet-security false
 
-To configure static routes on the FortiGate VMs
-
+********************************************************************************************
+*****Lab 3 Exercise 1 ==> To configure static routes on the FortiGate VMs ****
+********************************************************************************************
 Step 1
 -Copy the following commands, and then enter them in the FortiGate CLI console to create a static route on the FortiGate VM toward the virtual hub:
 config router static
@@ -38,8 +41,9 @@ set gateway 172.16.2.1
 set device port2
 end
 
-To configure BGP on the FortiGate VMs
-
+********************************************************************************************
+*****Lab 3 Exercise 1 ==>To configure BGP on the FortiGate VMs ****
+********************************************************************************************
 Step 1
 -Copy the following commands, and then enter them in the FortiGate CLI console to configure BGP on the FortiGate side.
 config router bgp
@@ -64,7 +68,9 @@ next
 end
 end
 
-To verify the  routing configuration
+********************************************************************************************
+*****Lab 3 Exercise 1 ==>To verify the  routing configuration****
+********************************************************************************************
 Step 4
 -Copy the following command, and enter it in the Azure Cloud shell to create a new VNet named LAB3-VNET3 with a subnet named Test:
 
