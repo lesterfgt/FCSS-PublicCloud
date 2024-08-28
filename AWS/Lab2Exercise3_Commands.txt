@@ -1,7 +1,9 @@
-To install Terraform in AWS CloudShell
+********************************************************************************************
+*****Exercise 3 ==> To install Terraform in AWS CloudShell ****
+********************************************************************************************
 
 Step 3
-Copy the following command, and then enter it in the shell to find the latest version of Terraform and store it in a variable 
+-Copy the following command, and then enter it in the shell to find the latest version of Terraform and store it in a variable 
 named TERRAFORM_VER:
 
 TERRAFORM_VER=`curl -s \
@@ -9,33 +11,33 @@ https://api.github.com/repos/hashicorp/terraform/releases/latest \
  |  grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1'`
 
 Step 4
-Copy the following command, and then enter it in the shell to download the latest version of Terraform in a zip file:
+-Copy the following command, and then enter it in the shell to download the latest version of Terraform in a zip file:
 
 wget https://releases.hashicorp.com/terraform/${TERRAFORM_VER}/\
 terraform_${TERRAFORM_VER}_linux_amd64.zip
 
 Step 5
-Copy the following command, and then enter it in the shell to extract the content of the zip file:
+-Copy the following command, and then enter it in the shell to extract the content of the zip file:
 
 unzip terraform_${TERRAFORM_VER}_linux_amd64.zip
 
 Step 6
-Copy the following command, and then enter it in the shell to make a directory called bin, and then move the Terraform executable file to that directory:
+-Copy the following command, and then enter it in the shell to make a directory called bin, and then move the Terraform executable file to that directory:
 
 mkdir ~/bin && mv terraform ~/bin
 
 Step 8
-Copy the following command, and then enter it in the shell to download the Terraform template files from GitHub:
+-Copy the following command, and then enter it in the shell to download the Terraform template files from GitHub:
 
 wget https://github.com/Fortinet-Courseware/FCSS-PublicCloud/\
 raw/main/AWS/Terraform/LAB2TerraformSingleFGT.zip
 
 Step 9
-Copy the following command, and then enter it in the shell to extract the template file:
+-Copy the following command, and then enter it in the shell to extract the template file:
 
 unzip LAB2TerraformSingleFGT.zip
 
 Step 10
-Copy the following command, and then enter it in the shell to navigate to the LAB2TerraformSingleFGT directory:
+-Copy the following command, and then enter it in the shell to navigate to the LAB2TerraformSingleFGT directory:
 
 cd LAB2TerraformSingleFGT
